@@ -3,9 +3,9 @@ layout: blog
 title: 'Kubernetes 1.26: Device Manager graduates to GA'
 date: 2022-12-19
 slug: devicemanager-ga
+author: >
+  Swati Sehgal (Red Hat)
 ---
-
-**Author:** Swati Sehgal (Red Hat)
 
 The Device Plugin framework was introduced in the Kubernetes v1.8 release as a vendor
 independent framework to enable discovery, advertisement and allocation of external
@@ -23,7 +23,7 @@ the `Registration` gRPC service served by kubelet to register itself with kubele
 Please refer to the documentation for an [example](/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/#example-pod) on how a pod can request a device exposed to the cluster by a device plugin.
 
 Here are some example implementations of device plugins:
-- [AMD GPU device plugin](https://github.com/RadeonOpenCompute/k8s-device-plugin)
+- [AMD GPU device plugin](https://github.com/ROCm/k8s-device-plugin)
 - [Collection of Intel device plugins for Kubernetes](https://github.com/intel/intel-device-plugins-for-kubernetes)
 - [NVIDIA device plugin for Kubernetes](https://github.com/NVIDIA/k8s-device-plugin)
 - [SRIOV network device plugin for Kubernetes](https://github.com/k8snetworkplumbingwg/sriov-network-device-plugin)

@@ -19,7 +19,7 @@ kubectl 管理控制 Kubernetes 集群。
 <!--
 Find more information in [Command line tool](/docs/reference/kubectl/) (`kubectl`).
 -->
-更多信息请查阅[命令行工具](/zh-cn/docs/kubectl/)（`kubectl`）。
+更多信息请查阅[命令行工具](/zh-cn/docs/reference/kubectl/)（`kubectl`）。
 
 ```shell
 kubectl [flags]
@@ -544,6 +544,20 @@ When set to true, external plugins can be used as subcommands for builtin comman
 </tr>
 
 <tr>
+<td colspan="2">KUBECTL_PORT_FORWARD_WEBSOCKETS</td>
+</tr>
+<tr>
+<td></td><td style="line-height: 130%; word-wrap: break-word;">
+<!--
+When set to true, the kubectl port-forward command will attempt to stream using the websockets protocol.
+If the upgrade to websockets fails, the commands will fallback to use the current SPDY protocol.
+-->
+当设置为 true 时，`kubectl port-forward` 命令将尝试使用 WebSocket 协议进行流式传输。
+如果升级到 WebSocket 失败，命令将回退到使用当前的 SPDY 协议。
+</td>
+</tr>
+
+<tr>
 <td colspan="2">KUBECTL_REMOTE_COMMAND_WEBSOCKETS</td>
 </tr>
 <tr>
@@ -553,6 +567,18 @@ When set to true, the kubectl exec, cp, and attach commands will attempt to stre
 -->
 当设置为 true 时，kubectl exec、cp 和 attach 命令将尝试使用 WebSocket 协议进行流式传输。
 如果升级到 WebSocket 失败，这些命令将回退为使用当前的 SPDY 协议。
+</td>
+</tr>
+
+<tr>
+<td colspan="2">KUBECTL_KUBERC</td>
+</tr>
+<tr>
+<td></td><td style="line-height: 130%; word-wrap: break-word;">
+<!--
+When set to true, kuberc file is taken into account to define user specific preferences.
+-->
+当设置为 true 时，kuberc 文件会被纳入考虑，用于定义用户特定偏好设置。
 </td>
 </tr>
 

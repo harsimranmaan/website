@@ -23,12 +23,12 @@ System component traces record the latency of and relationships between operatio
 
 <!-- 
 Kubernetes components emit traces using the
-[OpenTelemetry Protocol](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/protocol/otlp.md#opentelemetry-protocol-specification)
+[OpenTelemetry Protocol](https://opentelemetry.io/docs/specs/otlp/)
 with the gRPC exporter and can be collected and routed to tracing backends using an
 [OpenTelemetry Collector](https://github.com/open-telemetry/opentelemetry-collector#-opentelemetry-collector).
 -->
 Kubernetes 组件基于 gRPC 导出器的
-[OpenTelemetry 协议](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/protocol/otlp.md#opentelemetry-protocol-specification)
+[OpenTelemetry 协议](https://opentelemetry.io/docs/specs/otlp/)
 发送追踪信息，并用
 [OpenTelemetry Collector](https://github.com/open-telemetry/opentelemetry-collector#-opentelemetry-collector)
 收集追踪信息，再将其转交给追踪系统的后台。
@@ -37,8 +37,14 @@ Kubernetes 组件基于 gRPC 导出器的
 
 <!-- 
 ## Trace Collection
+
+Kubernetes components have built-in gRPC exporters for OTLP to export traces, either with an OpenTelemetry Collector, 
+or without an OpenTelemetry Collector.
 -->
 ## 追踪信息的收集 {#trace-collection}
+
+Kubernetes 组件具有内置的 gRPC 导出器，供 OTLP 导出追踪信息，可以使用 OpenTelemetry Collector，
+也可以不使用 OpenTelemetry Collector。
 
 <!-- 
 For a complete guide to collecting traces and using the collector, see
@@ -68,13 +74,14 @@ receivers:
       grpc:
 exporters:
   # Replace this exporter with the exporter for your backend
-  logging:
-    logLevel: debug
+  exporters:
+    debug:
+      verbosity: detailed
 service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [logging]
+      exporters: [debug]
 ```
 -->
 ```yaml
@@ -84,14 +91,39 @@ receivers:
       grpc:
 exporters:
   # 用适合你后端环境的导出器替换此处的导出器
-  logging:
-    logLevel: debug
+  exporters:
+    debug:
+      verbosity: detailed
 service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [logging]
+      exporters: [debug]
 ```
+
+<!--
+To directly emit traces to a backend without utilizing a collector, 
+specify the endpoint field in the Kubernetes tracing configuration file with the desired trace backend address. 
+This method negates the need for a collector and simplifies the overall structure.
+-->
+要在不使用收集器的情况下直接将追踪信息发送到后端，请在 Kubernetes
+追踪配置文件中指定端点字段以及所需的追踪后端地址。
+该方法不需要收集器并简化了整体结构。
+
+<!--
+For trace backend header configuration, including authentication details, environment variables can be used with `OTEL_EXPORTER_OTLP_HEADERS`, 
+see [OTLP Exporter Configuration](https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/).
+-->
+对于追踪后端标头配置，包括身份验证详细信息，环境变量可以与 `OTEL_EXPORTER_OTLP_HEADERS`
+一起使用，请参阅 [OTLP 导出器配置](https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/)。
+
+<!--
+Additionally, for trace resource attribute configuration such as Kubernetes cluster name, namespace, Pod name, etc., 
+environment variables can also be used with `OTEL_RESOURCE_ATTRIBUTES`, see [OTLP Kubernetes Resource](https://opentelemetry.io/docs/specs/semconv/resource/k8s/).
+-->
+另外，对于 Kubernetes 集群名称、命名空间、Pod 名称等追踪资源属性配置，
+环境变量也可以与 `OTEL_RESOURCE_ATTRIBUTES` 配合使用，请参见
+[OTLP Kubernetes 资源](https://opentelemetry.io/docs/specs/semconv/resource/k8s/)。
 
 <!-- 
 ## Component traces
@@ -260,5 +292,7 @@ there are no guarantees of backwards compatibility for tracing instrumentation.
 
 <!-- 
 * Read about [Getting Started with the OpenTelemetry Collector](https://opentelemetry.io/docs/collector/getting-started/)
+* Read about [OTLP Exporter Configuration](https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/)
 -->
 * 阅读 [Getting Started with the OpenTelemetry Collector](https://opentelemetry.io/docs/collector/getting-started/)
+* 了解 [OTLP 导出器配置](https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/)

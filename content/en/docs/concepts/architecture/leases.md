@@ -25,7 +25,7 @@ namespace. Under the hood, every kubelet heartbeat is an **update** request to t
 the `spec.renewTime` field for the Lease. The Kubernetes control plane uses the time stamp of this field
 to determine the availability of this `Node`.
 
-See [Node Lease objects](/docs/concepts/architecture/nodes/#heartbeats) for more details.
+See [Node Lease objects](/docs/concepts/architecture/nodes/#node-heartbeats) for more details.
 
 ## Leader election
 
@@ -33,6 +33,10 @@ Kubernetes also uses Leases to ensure only one instance of a component is runnin
 This is used by control plane components like `kube-controller-manager` and `kube-scheduler` in
 HA configurations, where only one instance of the component should be actively running while the other
 instances are on stand-by.
+
+Read [coordinated leader election](/docs/concepts/cluster-administration/coordinated-leader-election)
+to learn about how Kubernetes builds on the Lease API to select which component instance
+acts as leader.
 
 ## API server identity
 
@@ -45,7 +49,7 @@ Existence of kube-apiserver leases enables future capabilities that may require 
 each kube-apiserver.
 
 You can inspect Leases owned by each kube-apiserver by checking for lease objects in the `kube-system` namespace
-with the name `kube-apiserver-<sha256-hash>`. Alternatively you can use the label selector `apiserver.kubernetes.io/identity=kube-apiserver`:
+with the name `apiserver-<sha256-hash>`. Alternatively you can use the label selector `apiserver.kubernetes.io/identity=kube-apiserver`:
 
 ```shell
 kubectl -n kube-system get lease -l apiserver.kubernetes.io/identity=kube-apiserver

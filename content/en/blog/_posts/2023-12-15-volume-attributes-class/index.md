@@ -3,9 +3,9 @@ layout: blog
 title: "Kubernetes 1.29: VolumeAttributesClass for Volume Modification"
 date: 2023-12-15
 slug: kubernetes-1-29-volume-attributes-class
+author: >
+  Sunny Song (Google)
 ---
-
-**Author**: Sunny Song (Google)
 
 The v1.29 release of Kubernetes introduced an alpha feature to support modifying a volume
 by changing the `volumeAttributesClassName` that was specified for a PersistentVolumeClaim (PVC).
@@ -68,7 +68,7 @@ If you would like to see the feature in action and verify it works fine in your 
      name: csi-sc-example
    provisioner: pd.csi.storage.gke.io
    parameters:
-     disk-type: "hyperdisk-balanced"
+     type: "hyperdisk-balanced"
    volumeBindingMode: WaitForFirstConsumer
    ```
 

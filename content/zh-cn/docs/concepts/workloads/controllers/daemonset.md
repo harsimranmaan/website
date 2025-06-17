@@ -1,5 +1,8 @@
 ---
 title: DaemonSet
+api_metadata:
+- apiVersion: "apps/v1"
+  kind: "DaemonSet"
 description: >-
   DaemonSet 定义了提供节点本地设施的 Pod。这些设施可能对于集群的运行至关重要，例如网络辅助工具，或者作为 add-on 的一部分。
 content_type: concept
@@ -15,6 +18,9 @@ reviewers:
 - janetkuo
 - kow3ns
 title: DaemonSet
+api_metadata:
+- apiVersion: "apps/v1"
+  kind: "DaemonSet"
 description: >-
  A DaemonSet defines Pods that provide node-local facilities. These might be fundamental to the operation of your cluster, such as a networking helper tool, or be part of an add-on.
 content_type: concept
@@ -108,7 +114,7 @@ section.
 DaemonSet 对象的名称必须是一个合法的
 [DNS 子域名](/zh-cn/docs/concepts/overview/working-with-objects/names#dns-subdomain-names)。
 
-DaemonSet 也需要 [`.spec`](https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status) 节区。
+DaemonSet 也需要 [`.spec` 部分](https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status)。
 
 <!--
 ### Pod Template

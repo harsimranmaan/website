@@ -143,7 +143,7 @@ extension points:
   {{< glossary_tooltip text="volumes" term_id="volume" >}}.
   Extension points: `preFilter`, `filter`, `reserve`, `preBind`, `score`.
   {{< note >}}
-  `score` extension point is enabled when `VolumeCapacityPriority` feature is
+  `score` extension point is enabled when `StorageCapacityScoring` feature is
   enabled. It prioritizes the smallest PVs that can fit the requested volume
   size.
   {{< /note >}}
@@ -217,9 +217,11 @@ If a Pod doesn't specify a scheduler name, kube-apiserver will set it to
 to get those pods scheduled.
 
 {{< note >}}
-Pod's scheduling events have `.spec.schedulerName` as the ReportingController.
-Events for leader election use the scheduler name of the first profile in the
-list.
+Pod's scheduling events have `.spec.schedulerName` as their `reportingController`.
+Events for leader election use the scheduler name of the first profile in the list.
+
+For more information, please refer to the `reportingController` section under
+[Event API Reference](/docs/reference/kubernetes-api/cluster-resources/event-v1/).
 {{< /note >}}
 
 {{< note >}}
@@ -330,14 +332,14 @@ The general hierarchy for precedence when configuring `MultiPoint` plugins is as
 3. Default plugins and their default settings
 
 To demonstrate the above hierarchy, the following example is based on these plugins:
-|Plugin|Extension Points|
-|---|---|
-|`DefaultQueueSort`|`QueueSort`|
-|`CustomQueueSort`|`QueueSort`|
-|`DefaultPlugin1`|`Score`, `Filter`|
-|`DefaultPlugin2`|`Score`|
-|`CustomPlugin1`|`Score`, `Filter`|
-|`CustomPlugin2`|`Score`, `Filter`|
+| Plugin             | Extension Points  |
+| ------------------ | ----------------- |
+| `DefaultQueueSort` | `QueueSort`       |
+| `CustomQueueSort`  | `QueueSort`       |
+| `DefaultPlugin1`   | `Score`, `Filter` |
+| `DefaultPlugin2`   | `Score`           |
+| `CustomPlugin1`    | `Score`, `Filter` |
+| `CustomPlugin2`    | `Score`, `Filter` |
 
 A valid sample configuration for these plugins would be:
 

@@ -270,13 +270,12 @@ Some kubelet command line options behave differently on Windows, as described be
 * The `--kube-reserved`, `--system-reserved` , and `--eviction-hard` flags update
   [NodeAllocatable](/docs/tasks/administer-cluster/reserve-compute-resources/#node-allocatable)
 * Eviction by using `--enforce-node-allocable` is not implemented
-* Eviction by using `--eviction-hard` and `--eviction-soft` are not implemented
 * When running on a Windows node the kubelet does not have memory or CPU
   restrictions. `--kube-reserved` and `--system-reserved` only subtract from `NodeAllocatable`
   and do not guarantee resource provided for workloads.
   See [Resource Management for Windows nodes](/docs/concepts/configuration/windows-resource-management/#resource-reservation)
   for more information.
-* The `MemoryPressure` Condition is not implemented
+* The `PIDPressure` Condition is not implemented
 * The kubelet does not take OOM eviction actions
 -->
 * `--windows-priorityclass` 允许你设置 kubelet 进程的调度优先级
@@ -284,11 +283,10 @@ Some kubelet command line options behave differently on Windows, as described be
 * `--kube-reserved`、`--system-reserved` 和 `--eviction-hard` 标志更新
   [NodeAllocatable](/zh-cn/docs/tasks/administer-cluster/reserve-compute-resources/#node-allocatable)。
 * 未实现使用 `--enforce-node-allocable` 驱逐。
-* 未实现使用 `--eviction-hard` 和 `--eviction-soft` 驱逐。
 * 在 Windows 节点上运行时，kubelet 没有内存或 CPU 限制。
   `--kube-reserved` 和 `--system-reserved` 仅从 `NodeAllocatable` 中减去，并且不保证为工作负载提供的资源。
   有关更多信息，请参考 [Windows 节点的资源管理](/zh-cn/docs/concepts/configuration/windows-resource-management/#resource-reservation)。
-* 未实现 `MemoryPressure` 条件。
+* 未实现 `PIDPressure` 条件。
 * kubelet 不会执行 OOM 驱逐操作。
 
 <!--
@@ -431,7 +429,7 @@ work between Windows and Linux:
 The following list documents differences between how Pod specifications work between Windows and Linux:
 
 * `hostIPC` and `hostpid` - host namespace sharing is not possible on Windows
-* `hostNetwork` - [see below](#compatibility-v1-pod-spec-containers-hostnetwork)
+* `hostNetwork` - host networking is not possible on Windows
 * `dnsPolicy` - setting the Pod `dnsPolicy` to `ClusterFirstWithHostNet` is
    not supported on Windows because host networking is not provided. Pods always
    run with a container network.
@@ -445,7 +443,7 @@ The following list documents differences between how Pod specifications work bet
 以下列表记录了 Pod 规约在 Windows 和 Linux 之间的工作方式差异：
 
 * `hostIPC` 和 `hostpid` - 不能在 Windows 上共享主机命名空间。
-* `hostNetwork` - [参见下文](#compatibility-v1-pod-spec-containers-hostnetwork)
+* `hostNetwork` - 在 Windows 上不支持主机网络模式。
 * `dnsPolicy` - Windows 不支持将 Pod `dnsPolicy` 设为 `ClusterFirstWithHostNet`，
   因为未提供主机网络。Pod 始终用容器网络运行。
 * `podSecurityContext` [参见下文](#compatibility-v1-pod-spec-containers-securitycontext)
@@ -481,26 +479,20 @@ The following list documents differences between how Pod specifications work bet
 * 你无法为卷挂载启用 `mountPropagation`，因为这在 Windows 上不支持。
 
 <!--
-#### Field compatibility for hostNetwork {#compatibility-v1-pod-spec-containers-hostnetwork}
+#### Host network access {#compatibility-v1-pod-spec-containers-hostnetwork}
 
-{{< feature-state for_k8s_version="v1.26" state="alpha" >}}
-
-The kubelet can now request that pods running on Windows nodes use the host's network namespace instead
-of creating a new pod network namespace. To enable this functionality pass `--feature-gates=WindowsHostNetwork=true` to the kubelet.
+Kubernetes v1.26 to v1.32  included alpha support for running Windows Pods in the host's network namespace.
 -->
-#### hostNetwork 的字段兼容性   {#compatibility-v1-pod-spec-containers-hostnetwork}
+#### 主机网络访问   {#compatibility-v1-pod-spec-containers-hostnetwork}
 
-{{< feature-state for_k8s_version="v1.26" state="alpha" >}}
+Kubernetes 从 v1.26 到 v1.32 提供了在主机网络命名空间中运行 Windows Pod 的 Alpha 版本支持。
 
-现在，kubelet 可以请求在 Windows 节点上运行的 Pod 使用主机的网络命名空间，而不是创建新的 Pod 网络命名空间。
-要启用此功能，请将 `--feature-gates=WindowsHostNetwork=true` 传递给 kubelet。
-
-{{< note >}}
-<!-- 
-This functionality requires a container runtime that supports this functionality.
+<!--
+Kubernetes v{{< skew currentVersion >}} does **not** include the `WindowsHostNetwork` feature gate
+or support for running Windows Pods in the host's network namespace.
 -->
-此功能需要支持该功能的容器运行时。
-{{< /note >}}
+Kubernetes v{{< skew currentVersion >}} **不**包含 `WindowsHostNetwork` 特性门控，
+也不支持在主机网络命名空间中运行 Windows Pod。
 
 <!--
 #### Field compatibility for Pod security context {#compatibility-v1-pod-spec-containers-securitycontext}
@@ -695,12 +687,12 @@ Depending on the requirements for your workload these values may need to be adju
 Refer to
 [Hardware requirements for Windows Server Microsoft documentation](https://learn.microsoft.com/en-us/windows-server/get-started/hardware-requirements)
 for the most up-to-date information on minimum hardware requirements. For guidance on deciding on resources for
-production worker nodes refer to [Production worker nodes Kubernetes documentation](https://kubernetes.io/docs/setup/production-environment/#production-worker-nodes).
+production worker nodes refer to [Production worker nodes Kubernetes documentation](/docs/setup/production-environment/#production-worker-nodes).
 -->
 有关最新的最低硬件要求信息，
 请参考[微软文档：Windows Server 的硬件要求](https://learn.microsoft.com/zh-cn/windows-server/get-started/hardware-requirements)。
 有关决定生产工作节点资源的指导信息，
-请参考 [Kubernetes 文档：生产用工作节点](https://kubernetes.io/zh-cn/docs/setup/production-environment/#production-worker-nodes)。
+请参考 [Kubernetes 文档：生产用工作节点](/zh-cn/docs/setup/production-environment/#production-worker-nodes)。
 
 <!--
 To optimize system resources, if a graphical user interface is not required,
@@ -787,7 +779,7 @@ To set up the project on a newly created cluster, refer to the instructions in t
 
 ### 验证 Windows 集群的操作性  {#validating-windows-cluster-operability}
 
-Kubernetes 项目提供了 **Windows 操作准备** 规范，配备了结构化的测试套件。
+Kubernetes 项目提供了 **Windows 操作准备**规范，配备了结构化的测试套件。
 这个套件分为两组测试：核心和扩展。每组测试都包含了针对特定场景的分类测试。
 它可以用来验证 Windows 和混合系统（混合了 Linux 节点）的所有功能，实现全面覆盖。
 

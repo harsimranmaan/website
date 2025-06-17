@@ -106,6 +106,24 @@ or detective controls around Pods, their containers, and the images that run in 
 可让控制 Pod 之间或 Pod 与集群外部网络之间的网络流量。
 
 <!--
+### Admission control {#admission-control}
+
+[Admission controllers](/docs/reference/access-authn-authz/admission-controllers/)
+are plugins that intercept Kubernetes API requests and can validate or mutate
+the requests based on specific fields in the request. Thoughtfully designing
+these controllers helps to avoid unintended disruptions as Kubernetes APIs
+change across version updates. For design considerations, see
+[Admission Webhook Good Practices](/docs/concepts/cluster-administration/admission-webhooks-good-practices/).
+-->
+### 准入控制   {#admission-control}
+
+[准入控制器](/zh-cn/docs/reference/access-authn-authz/admission-controllers/)是拦截
+Kubernetes API 请求的插件，可以根据请求中的特定字段验证或修改请求。
+精心设计这些控制器有助于避免 Kubernetes API 在版本更新过程中发生意外干扰。
+有关设计注意事项，请参阅
+[Admission Webhook 良好实践](/zh-cn/docs/concepts/cluster-administration/admission-webhooks-good-practices/)。
+
+<!--
 ### Auditing
 
 Kubernetes [audit logging](/docs/tasks/debug/debug-cluster/audit/) provides a
@@ -147,7 +165,8 @@ Huawei Cloud | https://www.huaweicloud.com/intl/en-us/securecenter/overallsafety
 IBM Cloud | https://www.ibm.com/cloud/security |
 Microsoft Azure | https://docs.microsoft.com/en-us/azure/security/azure-security |
 Oracle Cloud Infrastructure | https://www.oracle.com/security |
-VMware vSphere | https://www.vmware.com/security/hardening-guides |
+Tencent Cloud | https://www.tencentcloud.com/solutions/data-security-and-information-protection |
+VMware vSphere | https://www.vmware.com/solutions/security/hardening-guides |
 
 {{< /table >}}
 -->
@@ -162,7 +181,8 @@ IaaS 提供商        | 链接 |
 IBM 云 | https://www.ibm.com/cloud/security |
 微软 Azure | https://docs.microsoft.com/en-us/azure/security/azure-security |
 Oracle 云基础设施| https://www.oracle.com/security |
-VMware vSphere | https://www.vmware.com/security/hardening-guides |
+腾讯云 | https://www.tencentcloud.com/solutions/data-security-and-information-protection |
+VMware vSphere | https://www.vmware.com/solutions/security/hardening-guides |
 
 {{< /table >}}
 
@@ -172,14 +192,14 @@ VMware vSphere | https://www.vmware.com/security/hardening-guides |
 You can define security policies using Kubernetes-native mechanisms,
 such as [NetworkPolicy](/docs/concepts/services-networking/network-policies/)
 (declarative control over network packet filtering) or
-[ValidatingAdmisisonPolicy](/docs/reference/access-authn-authz/validating-admission-policy/) (declarative restrictions on what changes
+[ValidatingAdmissionPolicy](/docs/reference/access-authn-authz/validating-admission-policy/) (declarative restrictions on what changes
 someone can make using the Kubernetes API).
 -->
 ## 策略
 
 你可以使用 Kubernetes 原生机制定义安全策略，例如
 [NetworkPolicy](/zh-cn/docs/concepts/services-networking/network-policies/)（对网络数据包过滤的声明式控制）
-或 [ValidatingAdmisisonPolicy](/zh-cn/docs/reference/access -authn-authz/validating-admission-policy/)
+或 [ValidatingAdmissionPolicy](/zh-cn/docs/reference/access-authn-authz/validating-admission-policy/)
 （对某人可以使用 Kubernetes API 进行哪些更改的声明性限制）。
 
 <!--
@@ -217,7 +237,7 @@ Learn about related Kubernetes security topics:
 -->
 了解相关的 Kubernetes 安全主题：
 
-* [保护集群](/zh-cn/docs/tasks/administer-cluster/secure-a-cluster/)
+* [保护集群](/zh-cn/docs/tasks/administer-cluster/securing-a-cluster/)
 * Kubernetes 中的[已知漏洞](/zh-cn/docs/reference/issues-security/official-cve-feed/)（以及更多信息的链接）
 * [传输中的数据加密](/zh-cn/docs/tasks/tls/managing-tls-in-a-cluster/)（针对控制平面）
 * [静态数据加密](/zh-cn/docs/tasks/administer-cluster/encrypt-data/)

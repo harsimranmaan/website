@@ -43,21 +43,21 @@ files by setting the `KUBECONFIG` environment variable or by setting the
 <!--
 This overview covers `kubectl` syntax, describes the command operations, and provides common examples.
 For details about each command, including all the supported flags and subcommands, see the
-[kubectl](/docs/reference/generated/kubectl/kubectl-commands/) reference documentation.
+[kubectl](/docs/reference/kubectl/generated/kubectl/)  reference documentation.
 -->
 本文概述了 `kubectl` 语法和命令操作描述，并提供了常见的示例。
 有关每个命令的详细信息，包括所有受支持的参数和子命令，
-请参阅 [kubectl](/docs/reference/generated/kubectl/kubectl-commands/) 参考文档。
+请参阅 [kubectl](/zh-cn/docs/reference/kubectl/generated/kubectl/) 参考文档。
 
 <!--
 For installation instructions, see [Installing kubectl](/docs/tasks/tools/#kubectl);
-for a quick guide, see the [cheat sheet](/docs/reference/kubectl/cheatsheet/).
+for a quick guide, see the [cheat sheet](/docs/reference/kubectl/quick-reference/).
 If you're used to using the `docker` command-line tool,
 [`kubectl` for Docker Users](/docs/reference/kubectl/docker-cli-to-kubectl/)
 explains some equivalent commands for Kubernetes.
 -->
 有关安装说明，请参见[安装 kubectl](/zh-cn/docs/tasks/tools/#kubectl)；
-如需快速指南，请参见[备忘单](/zh-cn/docs/reference/kubectl/cheatsheet/)。
+如需快速指南，请参见[备忘单](/zh-cn/docs/reference/kubectl/quick-reference/)。
 如果你更习惯使用 `docker` 命令行工具，
 [Docker 用户的 `kubectl`](/zh-cn/docs/reference/kubectl/docker-cli-to-kubectl/)
 介绍了一些 Kubernetes 的等价命令。
@@ -200,6 +200,7 @@ of `kubectl api-resources` to determine if a resource is namespaced.
 如果设置了 `POD_NAMESPACE` 环境变量，对命名空间资源的 CLI 操作对象将使用该变量值作为默认值。
 例如，如果该变量设置为 `seattle`，`kubectl get pods` 将返回 `seattle` 命名空间中的 Pod。
 这是因为 Pod 是一个命名空间资源，且命令中没有提供命名空间。
+请查看 `kubectl api-resources` 的输出，以确定某个资源是否是命名空间资源。
 
 <!--
 Explicit use of `--namespace <value>` overrides this behavior.
@@ -255,7 +256,7 @@ kubectl config set-context --current --namespace=<namespace-name>
 <!--
 The following table includes short descriptions and the general syntax for all of the `kubectl` operations:
 -->
-下表包含所有 kubectl 操作的简短描述和普通语法：
+下表包含所有 `kubectl` 操作的简短描述和普通语法：
 
 <!--
 Operation       | Syntax    |       Description
@@ -300,14 +301,14 @@ Operation       | Syntax    |       Description
 `scale`        | <code>kubectl scale (-f FILENAME &#124; TYPE NAME &#124; TYPE/NAME) --replicas=COUNT [--resource-version=version] [--current-replicas=count] [flags]</code> | Update the size of the specified replication controller.
 `set`    | `kubectl set SUBCOMMAND [options]` | Configure application resources.
 `taint`    | `kubectl taint NODE NAME KEY_1=VAL_1:TAINT_EFFECT_1 ... KEY_N=VAL_N:TAINT_EFFECT_N [options]` | Update the taints on one or more nodes.
-`top`    | `kubectl top (POD | NODE) [flags] [options]` | Display Resource (CPU/Memory/Storage) usage.
+`top`    | <code>kubectl top (POD &#124; NODE) [flags] [options]</code> | Display Resource (CPU/Memory/Storage) usage of pod or node.
 `uncordon`    | `kubectl uncordon NODE [options]` | Mark node as schedulable.
 `version`        | `kubectl version [--client] [flags]` | Display the Kubernetes version running on the client and server.
 `wait`    | <code>kubectl wait ([-f FILENAME] &#124; resource.group/resource.name &#124; resource.group [(-l label &#124; --all)]) [--for=delete&#124;--for condition=available] [options]</code> | Experimental: Wait for a specific condition on one or many resources.
 -->
 操作             | 语法      |       描述
 -------------------- | -------------------- | --------------------
-`alpha`    | `kubectl alpha SUBCOMMAND [flags]` | 列出与 alpha 特性对应的可用命令，这些特性在 Kubernetes 集群中默认情况下是不启用的。
+`alpha`    | `kubectl alpha SUBCOMMAND [flags]` | 列出与 Alpha 级别特性对应的可用命令，这些特性在 Kubernetes 集群中默认情况下是不启用的。
 `annotate`    | <code>kubectl annotate (-f FILENAME &#124; TYPE NAME &#124; TYPE/NAME) KEY_1=VAL_1 ... KEY_N=VAL_N [--overwrite] [--all] [--resource-version=version] [flags]</code> | 添加或更新一个或多个资源的注解。
 `api-resources`    | `kubectl api-resources [flags]` | 列出可用的 API 资源。
 `api-versions`    | `kubectl api-versions [flags]` | 列出可用的 API 版本。
@@ -325,7 +326,7 @@ Operation       | Syntax    |       Description
 `create`        | `kubectl create -f FILENAME [flags]` | 从文件或 stdin 创建一个或多个资源。
 `delete`        |  <code>kubectl delete (-f FILENAME &#124; TYPE [NAME &#124; /NAME &#124; -l label &#124; --all]) [flags]</code> |  基于文件、标准输入或通过指定标签选择器、名称、资源选择器或资源本身，删除资源。
 `describe`    | <code>kubectl describe (-f FILENAME &#124; TYPE [NAME_PREFIX &#124; /NAME &#124; -l label]) [flags]</code> | 显示一个或多个资源的详细状态。
-`diff`        | `kubectl diff -f FILENAME [flags]`| 在当前起作用的配置和文件或标准输之间作对比 (**BETA**)
+`diff`        | `kubectl diff -f FILENAME [flags]`| 在当前起作用的配置和文件或标准输之间作对比（**BETA**）
 `drain`    | `kubectl drain NODE [options]` | 腾空节点以准备维护。
 `edit`        | <code>kubectl edit (-f FILENAME &#124; TYPE NAME &#124; TYPE/NAME) [flags]</code> | 使用默认编辑器编辑和更新服务器上一个或多个资源的定义。
 `events`      | `kubectl events` | 列举事件。
@@ -347,7 +348,7 @@ Operation       | Syntax    |       Description
 `scale`        | <code>kubectl scale (-f FILENAME &#124; TYPE NAME &#124; TYPE/NAME) --replicas=COUNT [--resource-version=version] [--current-replicas=count] [flags]</code> | 更新指定副本控制器的大小。
 `set`    | `kubectl set SUBCOMMAND [options]` | 配置应用资源。
 `taint`    | `kubectl taint NODE NAME KEY_1=VAL_1:TAINT_EFFECT_1 ... KEY_N=VAL_N:TAINT_EFFECT_N [options]` | 更新一个或多个节点上的污点。
-`top`    | `kubectl top (POD | NODE) [flags] [options]` | 显示资源（CPU、内存、存储）的使用情况。
+`top`    | <code>kubectl top (POD &#124; NODE) [flags] [options]</code> | 显示 Pod 或节点的资源（CPU/内存/存储）使用情况。
 `uncordon`    | `kubectl uncordon NODE [options]` | 将节点标记为可调度。
 `version`        | `kubectl version [--client] [flags]` | 显示运行在客户端和服务器上的 Kubernetes 版本。
 `wait`    | <code>kubectl wait ([-f FILENAME] &#124; resource.group/resource.name &#124; resource.group [(-l label &#124; --all)]) [--for=delete&#124;--for condition=available] [options]</code> | 实验特性：等待一种或多种资源的特定状况。
@@ -664,7 +665,7 @@ kubectl get pods --sort-by=.metadata.name
 <!--
 Use the following set of examples to help you familiarize yourself with running the commonly used `kubectl` operations:
 -->
-使用以下示例集来帮助你熟悉运行常用 kubectl 操作：
+使用以下示例集来帮助你熟悉运行常用 `kubectl` 操作：
 
 <!--
 `kubectl apply` - Apply or Update a resource from a file or stdin.
@@ -839,7 +840,6 @@ kubectl exec <pod-name> -c <container-name> -- date
 # Get an interactive TTY and run /bin/bash from pod <pod-name>. By default, output is from the first container.
 kubectl exec -ti <pod-name> -- /bin/bash
 -->
-
 ```shell
 # 从 Pod <pod-name> 中获取运行 'date' 的输出。默认情况下，输出来自第一个容器。
 kubectl exec <pod-name> -- date
@@ -963,6 +963,7 @@ kubectl hello
 ```
 hello world
 ```
+
 <!--
 ```shell
 # You can "uninstall" a plugin, by removing it from the folder in your
@@ -1089,7 +1090,7 @@ Current user: plugins-user
 <!--
 * Read the `kubectl` reference documentation:
   * the kubectl [command reference](/docs/reference/kubectl/kubectl/)
-  * the [command line arguments](/docs/reference/generated/kubectl/kubectl-commands/) reference
+  * the [command line arguments](/docs/reference/kubectl/generated/kubectl/) reference
 * Learn about [`kubectl` usage conventions](/docs/reference/kubectl/conventions/)
 * Read about [JSONPath support](/docs/reference/kubectl/jsonpath/) in kubectl
 * Read about how to [extend kubectl with plugins](/docs/tasks/extend-kubectl/kubectl-plugins)
@@ -1097,7 +1098,7 @@ Current user: plugins-user
 -->
 * 阅读 `kubectl` 参考文档：
   * kubectl [命令参考](/zh-cn/docs/reference/kubectl/kubectl/)
-  * 参考[命令行参数](/docs/reference/generated/kubectl/kubectl-commands/)
+  * 参考[命令行参数](/docs/reference/kubectl/generated/kubectl/)
 * 学习关于 [`kubectl` 使用约定](/zh-cn/docs/reference/kubectl/conventions/)
 * 阅读 kubectl 中的 [JSONPath 支持](/zh-cn/docs/reference/kubectl/jsonpath/)
 * 了解如何[使用插件扩展 kubectl](/zh-cn/docs/tasks/extend-kubectl/kubectl-plugins)

@@ -3,9 +3,9 @@ layout: blog
 title: "Use KPNG to Write Specialized kube-proxiers"
 date: 2021-10-18
 slug: use-kpng-to-write-specialized-kube-proxiers
+author: >
+  Lars Ekman (Ericsson)
 ---
-
-**Author**: Lars Ekman (Ericsson)
 
 The post will show you how to create a specialized service kube-proxy
 style network proxier using Kubernetes Proxy NG
@@ -41,7 +41,7 @@ spec:
 
 If the `service.kubernetes.io/service-proxy-name` label is defined the
 `kube-proxy` will ignore the service. A custom controller can watch
-services with the label set to it's own name, "kpng-example" in
+services with the label set to its own name, "kpng-example" in
 this example, and setup specialized load-balancing.
 
 The `service.kubernetes.io/service-proxy-name` label is [not

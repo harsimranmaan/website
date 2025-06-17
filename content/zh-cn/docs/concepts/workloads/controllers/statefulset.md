@@ -1,5 +1,8 @@
 ---
 title: StatefulSet
+api_metadata:
+- apiVersion: "apps/v1"
+  kind: "StatefulSet"
 content_type: concept
 description: >-
   StatefulSet 运行一组 Pod，并为每个 Pod 保留一个稳定的标识。
@@ -16,6 +19,9 @@ reviewers:
 - kow3ns
 - smarterclayton
 title: StatefulSets
+api_metadata:
+- apiVersion: "apps/v1"
+  kind: "StatefulSet"
 content_type: concept
 description: >-
   A StatefulSet runs a group of Pods, and maintains a sticky identity for each of those Pods. This is useful for managing
@@ -43,7 +49,7 @@ following.
 -->
 ## 使用 StatefulSet   {#using-statefulsets}
 
-StatefulSet 对于需要满足以下一个或多个需求的应用程序很有价值：
+StatefulSet 对于需要满足以下一个或多个需求的应用程序很有价值。
 
 <!--
 * Stable, unique network identifiers.
@@ -78,8 +84,8 @@ that provides a set of stateless replicas.
 
 <!--
 * The storage for a given Pod must either be provisioned by a
-  [PersistentVolume Provisioner](https://github.com/kubernetes/examples/tree/master/staging/persistent-volume-provisioning/README.md)
-  based on the requested `storage class`, or pre-provisioned by an admin.
+  [PersistentVolume Provisioner](/docs/concepts/storage/dynamic-provisioning/) ([examples here](https://github.com/kubernetes/examples/tree/master/staging/persistent-volume-provisioning/README.md))
+  based on the requested _storage class_, or pre-provisioned by an admin.
 * Deleting and/or scaling a StatefulSet down will *not* delete the volumes associated with the
   StatefulSet. This is done to ensure data safety, which is generally more valuable than an
   automatic purge of all related StatefulSet resources.
@@ -95,8 +101,9 @@ that provides a set of stateless replicas.
   [manual intervention to repair](#forced-rollback).
 -->
 * 给定 Pod 的存储必须由
-  [PersistentVolume Provisioner](https://github.com/kubernetes/examples/tree/master/staging/persistent-volume-provisioning/README.md)
-  基于所请求的 `storage class` 来制备，或者由管理员预先制备。
+  [PersistentVolume Provisioner](/zh-cn/docs/concepts/storage/dynamic-provisioning/)
+  （[例子在这里](https://github.com/kubernetes/examples/tree/master/staging/persistent-volume-provisioning/README.md)）
+  基于所请求的 **storage class** 来制备，或者由管理员预先制备。
 * 删除或者扩缩 StatefulSet 并**不会**删除它关联的存储卷。
   这样做是为了保证数据安全，它通常比自动清除 StatefulSet 所有相关的资源更有价值。
 * StatefulSet 当前需要[无头服务](/zh-cn/docs/concepts/services-networking/service/#headless-services)来负责 Pod
@@ -115,6 +122,59 @@ The example below demonstrates the components of a StatefulSet.
 
 下面的示例演示了 StatefulSet 的组件。
 
+<!--
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: 80
+    name: web
+  clusterIP: None
+  selector:
+    app: nginx
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  selector:
+    matchLabels:
+      app: nginx # has to match .spec.template.metadata.labels
+  serviceName: "nginx"
+  replicas: 3 # by default is 1
+  minReadySeconds: 10 # by default is 0
+  template:
+    metadata:
+      labels:
+        app: nginx # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: nginx
+        image: registry.k8s.io/nginx-slim:0.24
+        ports:
+        - containerPort: 80
+          name: web
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "my-storage-class"
+      resources:
+        requests:
+          storage: 1Gi
+```
+-->
 ```yaml
 apiVersion: v1
 kind: Service
@@ -149,7 +209,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: nginx
-        image: registry.k8s.io/nginx-slim:0.8
+        image: registry.k8s.io/nginx-slim:0.24
         ports:
         - containerPort: 80
           name: web
@@ -216,15 +276,24 @@ validation error during StatefulSet creation.
 <!--
 ### Volume Claim Templates
 
-You can set the `.spec.volumeClaimTemplates` which can provide stable storage using
-[PersistentVolumes](/docs/concepts/storage/persistent-volumes/) provisioned by a PersistentVolume
-Provisioner.
+You can set the `.spec.volumeClaimTemplates` field to create a
+[PersistentVolumeClaim](/docs/concepts/storage/persistent-volumes/).
+This will provide stable storage to the StatefulSet if either
 -->
 ### 卷申领模板  {#volume-claim-templates}
 
-你可以设置 `.spec.volumeClaimTemplates`，
-它可以使用 PersistentVolume 制备程序所准备的
-[PersistentVolumes](/zh-cn/docs/concepts/storage/persistent-volumes/) 来提供稳定的存储。
+你可以设置 `.spec.volumeClaimTemplates` 字段来创建
+[PersistentVolumeClaim](/zh-cn/docs/concepts/storage/persistent-volumes/)。
+这将为 StatefulSet 提供稳定的存储，如果：
+
+<!--
+* The StorageClass specified for the volume claim is set up to use [dynamic
+  provisioning](/docs/concepts/storage/dynamic-provisioning/), or
+* The cluster already contains a PersistentVolume with the correct StorageClass
+  and sufficient available storage space.
+-->
+* 为卷申领指定的 StorageClass 配置使用[动态制备](/zh-cn/docs/concepts/storage/dynamic-provisioning/)，或
+* 集群已包含具有正确 StorageClass 和足够可用存储空间的 PersistentVolume。
 
 <!--
 ### Minimum ready seconds
@@ -278,19 +347,15 @@ StatefulSet 的控制器也会添加一个包含此索引的 Pod 标签：`apps.
 -->
 ### 起始序号   {#start-ordinal}
 
-{{< feature-state for_k8s_version="v1.27" state="beta" >}}
+{{< feature-state feature_gate_name="StatefulSetStartOrdinal" >}}
 
 <!--
 `.spec.ordinals` is an optional field that allows you to configure the integer
-ordinals assigned to each Pod. It defaults to nil. You must enable the
-`StatefulSetStartOrdinal`
-[feature gate](/docs/reference/command-line-tools-reference/feature-gates/) to
-use this field. Once enabled, you can configure the following options:
+ordinals assigned to each Pod. It defaults to nil. Within the field, you can
+configure the following options:
 -->
 `.spec.ordinals` 是一个可选的字段，允许你配置分配给每个 Pod 的整数序号。
-该字段默认为 nil 值。你必须启用 `StatefulSetStartOrdinal`
-[特性门控](/zh-cn/docs/reference/command-line-tools-reference/feature-gates/)才能使用此字段。
-一旦启用，你就可以配置以下选项：
+该字段默认为 nil 值。在该字段内，你可以配置以下选项：
 
 <!--
 * `.spec.ordinals.start`: If the `.spec.ordinals.start` field is set, Pods will
@@ -424,19 +489,20 @@ the StatefulSet.
 -->
 ### Pod 索引标签  {#pod-index-label}
 
-{{< feature-state for_k8s_version="v1.28" state="beta" >}}
+{{< feature-state feature_gate_name="PodIndexLabel" >}}
 
 <!--
 When the StatefulSet {{<glossary_tooltip text="controller" term_id="controller">}} creates a Pod,
 the new Pod is labelled with `apps.kubernetes.io/pod-index`. The value of this label is the ordinal index of
 the Pod. This label allows you to route traffic to a particular pod index, filter logs/metrics
-using the pod index label, and more. Note the feature gate `PodIndexLabel` must be enabled for this
-feature, and it is enabled by default.
+using the pod index label, and more. Note the feature gate `PodIndexLabel` is enabled and locked by default for this
+feature, in order to disable it, users will have to use server emulated version v1.31.
 -->
 当 StatefulSet {{<glossary_tooltip text="控制器" term_id="controller">}}创建一个 Pod 时，
 新的 Pod 会被打上 `apps.kubernetes.io/pod-index` 标签。标签的取值为 Pod 的序号索引。
 此标签使你能够将流量路由到特定索引值的 Pod、使用 Pod 索引标签来过滤日志或度量值等等。
-注意要使用这一特性需要启用特性门控 `PodIndexLabel`，而该门控默认是被启用的。
+请注意，默认情况下，特性门 `PodIndexLabel` 已启用并锁定。要禁用它，
+用户需要使用服务器模拟版本 v1.31。
 
 <!--
 ## Deployment and Scaling Guarantees
@@ -448,8 +514,8 @@ feature, and it is enabled by default.
 -->
 ## 部署和扩缩保证   {#deployment-and-scaling-guarantees}
 
-* 对于包含 N 个 副本的 StatefulSet，当部署 Pod 时，它们是依次创建的，顺序为 `0..N-1`。
-* 当删除 Pod 时，它们是逆序终止的，顺序为 `N-1..0`。
+* 对于包含 N 个 副本的 StatefulSet，当部署 Pod 时，它们是依次创建的，顺序为 {0..N-1}。
+* 当删除 Pod 时，它们是逆序终止的，顺序为 {N-1..0}。
 * 在将扩缩操作应用到 Pod 之前，它前面的所有 Pod 必须是 Running 和 Ready 状态。
 * 在一个 Pod 终止之前，所有的继任者必须完全关闭。
 
@@ -621,7 +687,7 @@ by rounding it up. This field cannot be 0. The default setting is 1.
 -->
 你可以通过指定 `.spec.updateStrategy.rollingUpdate.maxUnavailable`
 字段来控制更新期间不可用的 Pod 的最大数量。
-该值可以是绝对值（例如，“5”）或者是期望 Pod 个数的百分比（例如，`10%`）。
+该值可以是绝对值（例如，`"5"`）或者是期望 Pod 个数的百分比（例如，`"10%"`）。
 绝对值是根据百分比值四舍五入计算的。
 该字段不能为 0。默认设置为 1。
 
@@ -686,7 +752,7 @@ StatefulSet 才会开始使用被还原的模板来重新创建 Pod。
 -->
 ## PersistentVolumeClaim 保留  {#persistentvolumeclaim-retention}
 
-{{< feature-state for_k8s_version="v1.27" state="beta" >}}
+{{< feature-state feature_gate_name="StatefulSetAutoDeletePVC" >}}
 
 <!--
 The optional `.spec.persistentVolumeClaimRetentionPolicy` field controls if
@@ -849,7 +915,7 @@ the `.spec.replicas` field automatically.
 如果 [HorizontalPodAutoscaler](/zh-cn/docs/tasks/run-application/horizontal-pod-autoscale/)
 （或任何类似的水平扩缩 API）正在管理 StatefulSet 的扩缩，
 请不要设置 `.spec.replicas`。
-相反，允许 Kubernetes 控制平面自动管理 `.spec.replicas` 字段。
+相反，允许 Kubernetes {{<glossary_tooltip text="控制平面" term_id="control-plane" >}}自动管理 `.spec.replicas` 字段。
 
 ## {{% heading "whatsnext" %}}
 

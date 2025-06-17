@@ -1,12 +1,12 @@
 ---
 title: 升级 Linux 节点
 content_type: task
-weight: 100
+weight: 40
 ---
 <!--
 title: Upgrading Linux nodes
 content_type: task
-weight: 100
+weight: 40
 -->
 
 <!-- overview -->
@@ -18,7 +18,7 @@ This page explains how to upgrade a Linux Worker Nodes created with kubeadm.
 
 ## {{% heading "prerequisites" %}}
 
-{{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
+{{< include "task-tutorial-prereqs-node-upgrade.md" >}} {{< version-check >}}
 
 <!--
 * Familiarize yourself with [the process for upgrading the rest of your kubeadm

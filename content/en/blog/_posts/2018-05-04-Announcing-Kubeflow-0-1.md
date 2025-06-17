@@ -3,6 +3,9 @@ title: 'Announcing Kubeflow 0.1'
 date: 2018-05-04
 author: aronchick
 slug: announcing-kubeflow-0.1
+author: >
+  Jeremy Lewi (Google),
+  David Aronchick (Google)
 ---
 
 # Since Last We Met
@@ -39,7 +42,7 @@ NAMESPACE=kubeflow
 kubectl create namespace ${NAMESPACE}
 VERSION=v0.1.3
 
-# Initialize a ksonnet app. Set the namespace for it's default environment.
+# Initialize a ksonnet app. Set the namespace for its default environment.
 APP_NAME=my-kubeflow
 ks init ${APP_NAME}
 cd ${APP_NAME}
@@ -130,5 +133,3 @@ But the most important feature is the one we haven’t heard yet. Please tell us
 * Our [weekly community meeting](https://github.com/kubeflow/community)
 * Please download and run [kubeflow](https://github.com/kubeflow/kubeflow/pull/330/files), and submit bugs!
 
-Thank you for all your support so far!
-*Jeremy Lewi & David Aronchick* Google

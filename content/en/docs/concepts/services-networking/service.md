@@ -106,19 +106,7 @@ For example, suppose you have a set of Pods that each listen on TCP port 9376
 and are labelled as `app.kubernetes.io/name=MyApp`. You can define a Service to
 publish that TCP listener:
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: my-service
-spec:
-  selector:
-    app.kubernetes.io/name: MyApp
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 9376
-```
+{{% code_sample file="service/simple-service.yaml" %}}
 
 Applying this manifest creates a new Service named "my-service" with the default
 ClusterIP [service type](#publishing-services-service-types). The Service
@@ -219,13 +207,14 @@ metadata:
   name: my-service
 spec:
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
       targetPort: 9376
 ```
 
-Because this Service has no selector, the corresponding EndpointSlice (and
-legacy Endpoints) objects are not created automatically. You can map the Service
+Because this Service has no selector, the corresponding EndpointSlice
+objects are not created automatically. You can map the Service
 to the network address and port where it's running, by adding an EndpointSlice
 object manually. For example:
 
@@ -241,8 +230,7 @@ metadata:
     kubernetes.io/service-name: my-service
 addressType: IPv4
 ports:
-  - name: '' # empty because port 9376 is not assigned as a well-known
-             # port (by IANA)
+  - name: http # should match with the name of the service port defined above
     appProtocol: http
     protocol: TCP
     port: 9376
@@ -292,7 +280,7 @@ the EndpointSlice manifest: a TCP connection to 10.1.2.3 or 10.4.5.6, on port 93
 
 {{< note >}}
 The Kubernetes API server does not allow proxying to endpoints that are not mapped to
-pods. Actions such as `kubectl proxy <service-name>` where the service has no
+pods. Actions such as `kubectl port-forward service/<service-name> forwardedPort:servicePort` where the service has no
 selector will fail due to this constraint. This prevents the Kubernetes API server
 from being used as a proxy to endpoints the caller may not be authorized to access.
 {{< /note >}}
@@ -319,14 +307,22 @@ until an extra endpoint needs to be added.
 See [EndpointSlices](/docs/concepts/services-networking/endpoint-slices/) for more
 information about this API.
 
-### Endpoints
+### Endpoints (deprecated) {#endpoints}
 
-In the Kubernetes API, an
+{{< feature-state for_k8s_version="v1.33" state="deprecated" >}}
+
+The EndpointSlice API is the evolution of the older
 [Endpoints](/docs/reference/kubernetes-api/service-resources/endpoints-v1/)
-(the resource kind is plural) defines a list of network endpoints, typically
-referenced by a Service to define which Pods the traffic can be sent to.
+API. The deprecated Endpoints API has several problems relative to
+EndpointSlice:
 
-The EndpointSlice API is the recommended replacement for Endpoints.
+  - It does not support dual-stack clusters.
+  - It does not contain information needed to support newer features, such as
+    [trafficDistribution](/docs/concepts/services-networking/service/#traffic-distribution).
+  - It will truncate the list of endpoints if it is too long to fit in a single object.
+
+Because of this, it is recommended that all clients use the
+EndpointSlice API rather than Endpoints.
 
 #### Over-capacity endpoints
 
@@ -368,6 +364,8 @@ This field follows standard Kubernetes label syntax. Valid values are one of:
 | Protocol | Description |
 |----------|-------------|
 | `kubernetes.io/h2c` | HTTP/2 over cleartext as described in [RFC 7540](https://www.rfc-editor.org/rfc/rfc7540) |
+| `kubernetes.io/ws`  | WebSocket over cleartext as described in [RFC 6455](https://www.rfc-editor.org/rfc/rfc6455) |
+| `kubernetes.io/wss` | WebSocket over TLS as described in [RFC 6455](https://www.rfc-editor.org/rfc/rfc6455) |
 
 ### Multi-port Services
 
@@ -523,8 +521,6 @@ spec:
 
 #### Reserve Nodeport ranges to avoid collisions  {#avoid-nodeport-collisions}
 
-{{< feature-state for_k8s_version="v1.29" state="stable" >}}
-
 The policy for assigning ports to NodePort services applies to both the auto-assignment and
 the manual assignment scenarios. When a user wants to create a NodePort service that
 uses a specific port, the target port may conflict with another port that has already been assigned.
@@ -622,6 +618,16 @@ You can integrate with [Gateway](https://gateway-api.sigs.k8s.io/) rather than S
 can define your own (provider specific) annotations on the Service that specify the equivalent detail.
 {{< /note >}}
 
+#### Node liveness impact on load balancer traffic
+
+Load balancer health checks are critical to modern applications. They are used to
+determine which server (virtual machine, or IP address) the load balancer should
+dispatch traffic to. The Kubernetes APIs do not define how health checks have to be
+implemented for Kubernetes managed load balancers, instead it's the cloud providers
+(and the people implementing integration code) who decide on the behavior. Load
+balancer health checks are extensively used within the context of supporting the
+`externalTrafficPolicy` field for Services.
+
 #### Load balancers with mixed protocol types
 
 {{< feature-state feature_gate_name="MixedProtocolLBService" >}}
@@ -671,14 +677,11 @@ The value of `spec.loadBalancerClass` must be a label-style identifier,
 with an optional prefix such as "`internal-vip`" or "`example.com/internal-vip`".
 Unprefixed names are reserved for end-users.
 
-#### Specifying IPMode of load balancer status {#load-balancer-ip-mode}
+#### Load balancer IP address mode {#load-balancer-ip-mode}
 
 {{< feature-state feature_gate_name="LoadBalancerIPMode" >}}
 
-Starting as Alpha in Kubernetes 1.29, 
-a [feature gate](/docs/reference/command-line-tools-reference/feature-gates/) 
-named `LoadBalancerIPMode` allows you to set the `.status.loadBalancer.ingress.ipMode` 
-for a Service with `type` set to `LoadBalancer`. 
+For a Service of `type: LoadBalancer`, a controller can set `.status.loadBalancer.ingress.ipMode`. 
 The `.status.loadBalancer.ingress.ipMode` specifies how the load-balancer IP behaves. 
 It may be specified only when the `.status.loadBalancer.ingress.ip` field is also specified.
 
@@ -715,16 +718,16 @@ Select one of the tabs.
 metadata:
   name: my-service
   annotations:
-      networking.gke.io/load-balancer-type: "Internal"
+    networking.gke.io/load-balancer-type: "Internal"
 ```
 {{% /tab %}}
 {{% tab name="AWS" %}}
 
 ```yaml
 metadata:
-    name: my-service
-    annotations:
-        service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+  name: my-service
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
 ```
 
 {{% /tab %}}
@@ -734,7 +737,7 @@ metadata:
 metadata:
   name: my-service
   annotations:
-      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 ```
 
 {{% /tab %}}
@@ -744,7 +747,7 @@ metadata:
 metadata:
   name: my-service
   annotations:
-      service.kubernetes.io/ibm-load-balancer-cloud-provider-ip-type: "private"
+    service.kubernetes.io/ibm-load-balancer-cloud-provider-ip-type: "private"
 ```
 
 {{% /tab %}}
@@ -792,7 +795,7 @@ metadata:
 metadata:
   name: my-service
   annotations:
-      service.beta.kubernetes.io/oci-load-balancer-internal: true
+    service.beta.kubernetes.io/oci-load-balancer-internal: true
 ```
 {{% /tab %}}
 {{< /tabs >}}
@@ -979,6 +982,40 @@ You can set the `.spec.internalTrafficPolicy` and `.spec.externalTrafficPolicy` 
 to control how Kubernetes routes traffic to healthy (“ready”) backends.
 
 See [Traffic Policies](/docs/reference/networking/virtual-ips/#traffic-policies) for more details.
+
+### Traffic distribution
+
+{{< feature-state feature_gate_name="ServiceTrafficDistribution" >}}
+
+The `.spec.trafficDistribution` field provides another way to influence traffic
+routing within a Kubernetes Service. While traffic policies focus on strict
+semantic guarantees, traffic distribution allows you to express _preferences_
+(such as routing to topologically closer endpoints). This can help optimize for
+performance, cost, or reliability. In Kubernetes {{< skew currentVersion >}}, the
+following field value is supported: 
+
+`PreferClose`
+: Indicates a preference for routing traffic to endpoints that are in the same
+  zone as the client.
+
+{{< feature-state feature_gate_name="PreferSameTrafficDistribution" >}}
+
+Two additional values are available when the `PreferSameTrafficDistribution`
+[feature gate](/docs/reference/command-line-tools-reference/feature-gates/) is
+enabled:
+
+`PreferSameZone`
+: This is an alias for `PreferClose` that is clearer about the intended semantics.
+
+`PreferSameNode`
+: Indicates a preference for routing traffic to endpoints that are on the same
+  node as the client.
+
+If the field is not set, the implementation will apply its default routing strategy.
+
+See [Traffic
+Distribution](/docs/reference/networking/virtual-ips/#traffic-distribution) for
+more details
 
 ### Session stickiness
 

@@ -114,6 +114,8 @@ During the two-month maintenance mode period, Release Managers may cut
 additional maintenance releases to resolve:
 
 - CVEs (under the advisement of the Security Response Committee)
+- [Vulnerabilities](/docs/reference/issues-security/official-cve-feed/) that have an assigned
+  CVE ID (under the advisement of the Security Response Committee)
 - dependency issues (including base image updates)
 - critical core component issues
 
@@ -127,6 +129,7 @@ dates for simplicity (every month has it).
 在两个月的维护模式期间，发布管理员可能会删减额外的维护版本以解决：
 
 - CVE（在安全响应委员会的建议下）
+- 已分配 CVE ID 的[漏洞](/zh-cn/docs/reference/issues-security/official-cve-feed/)（在安全响应委员会的建议下）
 - 依赖问题（包括基础镜像更新）
 - 关键核心组件问题
 
@@ -146,18 +149,7 @@ releases may also occur in between these.
 时间表可能会因错误修复的严重程度而有所不同，但为了便于规划，我们每月将按照以下时间点进行发布。
 中间可能会发布一些计划外的关键版本。
 
-<!--
-| Monthly Patch Release | Cherry Pick Deadline | Target date |
-| --------------------- | -------------------- | ----------- |
-| March 2024            | 2024-03-08           | 2024-03-13  |
-| April 2024            | 2024-04-12           | 2024-04-17  |
-| May 2024              | 2024-05-10           | 2024-05-15  |
--->
-| 月度补丁发布   | Cherry Pick 截止日期 | 目标日期      |
-|--------------|---------------------|-------------|
-| 2024 年 3 月  | 2024-03-08          | 2024-03-13  |
-| 2024 年 4 月  | 2024-04-12          | 2024-04-17  |
-| 2024 年 5 月  | 2024-05-10          | 2024-05-15  |
+{{< upcoming-releases >}}
 
 <!--
 ## Detailed Release History for Active Branches

@@ -24,7 +24,7 @@ There are localized versions available of this whitepaper; if you can link to on
 when localizing, that's even better.
 {{< /comment >}}
 
-The CNCF [white paper](https://github.com/cncf/tag-security/tree/main/security-whitepaper)
+The CNCF [white paper](https://github.com/cncf/tag-security/blob/main/community/resources/security-whitepaper/v2/CNCF_cloud-native-security-whitepaper-May2022-v2.pdf)
 on cloud native security defines security controls and practices that are
 appropriate to different _lifecycle phases_.
 
@@ -84,9 +84,8 @@ layers expect.
 
 ## _Runtime_ lifecycle phase {#lifecycle-phase-runtime}
 
-The Runtime phase comprises three critical areas: [compute](#protection-runtime-compute),
-[access](#protection-runtime-access), and [storage](#protection-runtime-storage).
-
+The Runtime phase comprises three critical areas: [access](#protection-runtime-access),
+[compute](#protection-runtime-compute), and [storage](#protection-runtime-storage).
 
 ### Runtime protection: access {#protection-runtime-access}
 
@@ -115,7 +114,7 @@ pay special attention to restricting misuse there.
 things: isolation between different applications, and a mechanism to combine
 those isolated applications to run on the same host computer. Those two
 aspects, isolation and aggregation, mean that runtime security involves
-trade-offs and finding an appropriate balance.
+identifying trade-offs and finding an appropriate balance.
 
 Kubernetes relies on a {{< glossary_tooltip text="container runtime" term_id="container-runtime" >}}
 to actually set up and run containers. The Kubernetes project does
@@ -143,7 +142,7 @@ To protect your compute at runtime, you can:
    Pods with different trust contexts are run on separate sets of nodes.
 1. Use a {{< glossary_tooltip text="container runtime" term_id="container-runtime" >}}
    that provides security restrictions.
-1. On Linux nodes, use a Linux security module such as [AppArmor](/docs/tutorials/security/apparmor/) (beta)
+1. On Linux nodes, use a Linux security module such as [AppArmor](/docs/tutorials/security/apparmor/)
    or [seccomp](/docs/tutorials/security/seccomp/).
 
 ### Runtime protection: storage {#protection-runtime-storage}
@@ -204,7 +203,7 @@ logs are both tamper-proof and confidential.
 
 ### Cloud native security {#further-reading-cloud-native}
 
-* CNCF [white paper](https://github.com/cncf/tag-security/tree/main/security-whitepaper)
+* CNCF [white paper](https://github.com/cncf/tag-security/blob/main/community/resources/security-whitepaper/v2/CNCF_cloud-native-security-whitepaper-May2022-v2.pdf)
   on cloud native security.
 * CNCF [white paper](https://github.com/cncf/tag-security/blob/f80844baaea22a358f5b20dca52cd6f72a32b066/supply-chain-security/supply-chain-security-paper/CNCF_SSCP_v1.pdf)
   on good practices for securing a software supply chain.
@@ -223,4 +222,3 @@ logs are both tamper-proof and confidential.
 * [Network policies](/docs/concepts/services-networking/network-policies/) for Pods
 * [Pod security standards](/docs/concepts/security/pod-security-standards/)
 * [RuntimeClasses](/docs/concepts/containers/runtime-class)
-
